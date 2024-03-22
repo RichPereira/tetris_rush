@@ -12,15 +12,17 @@
 #define SCREEN_X 320
 #define SCREEN_Y 240
 #define BLANK 0x0000
-#define N 8
+#define BOARD_COLOR 0xFFFF
 
-#define board_dim_x 100
-#define board_dim_y 200
+#define board_dim_x 130
+#define board_dim_y 180
 
 int pixel_buffer_start; // global variable
 short int Buffer1[240][512]; // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
-void initialize_board();
+short int board[board_dim_x][board_dim_y];
+void initialize_data();
+void draw_tetris_board();
 void plot_pixel(int x, int y, short int line_colour);
 void wait_for_vsync();
 void clear_screen_init();
@@ -41,7 +43,14 @@ int main(void){
     *(pixel_ctrl_ptr + 1) = (int) &Buffer2;
     pixel_buffer_start = *(pixel_ctrl_ptr + 1); // we draw on the back buffer
     clear_screen_init(); // pixel_buffer_start points to the pixel buffer
+    initialize_data();
 
+    while(1){
+        draw_tetris_board();
+        // Swaps the front buffer with the back onces the sync is complete and rendering is done
+        wait_for_vsync(); // swap front and back buffers on VGA vertical sync
+        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+    }
     
     return 0;
 }
@@ -80,9 +89,35 @@ void swap(int *a, int *b){
 }
 
 
+// Draws boxes of 2x2 size
 void draw_box(int x, int y, short int colour){  //four pixels in total
-    plot_pixel(x, y, colour);
-    plot_pixel(x + 1, y, colour);
-    plot_pixel(x, y + 1, colour);
-    plot_pixel(x + 1, y + 1, colour);
+    for (int i = 0; i < 2; i++){
+        for (int j = 0; j < 2; j++){
+            plot_pixel(x + i, y + j, colour);
+        }
+    }
+}
+
+
+// Function draws the initial white board where the block will drop in
+void draw_tetris_board() {
+    for (int i = 0; i < board_dim_x; i++) {
+        for (int j = 0; j < board_dim_y; j++) {
+            // Adjusting coordinates based on i and j
+            int x = 70 + i;
+            int y = 40 + j;
+            short int color = board[i][j];
+            plot_pixel(x, y, color);
+        }
+    }
+}
+
+
+// Function initializes any data that requires to be set before game starts
+void initialize_data(){
+    for (int i = 0; i < board_dim_x; i++) {
+        for (int j = 0; j < board_dim_y; j++) {
+            board[i][j] = BOARD_COLOR;
+        }
+    }
 }
