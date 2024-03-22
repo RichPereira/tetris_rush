@@ -42,7 +42,7 @@ int main(void){
     pixel_buffer_start = *(pixel_ctrl_ptr + 1); // we draw on the back buffer
     clear_screen_init(); // pixel_buffer_start points to the pixel buffer
 
-    printf("Success until here!");
+    
     return 0;
 }
 
