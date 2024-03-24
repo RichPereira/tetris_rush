@@ -210,6 +210,7 @@ void generate_random_block(){
     }
 }
 
+// Function updates the board by putting the random block at the top of the board
 void update_board() {
     // Define the starting position for placing the block
     int start_x = board_dim_x / 2 - (BLOCK_SIZE/2); // Adjusted to center the block
