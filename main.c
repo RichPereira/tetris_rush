@@ -120,6 +120,40 @@ int main(void){
     clear_screen_init(); // pixel_buffer_start points to the pixel buffer
     initialize_data();
     bool game_state = true;
+
+    // int byte1 = 0;
+	// int byte2 = 0;
+	// int byte3 = 0;
+	
+  	// volatile int * PS2_ptr = (int *) 0xFF200100;  // PS/2 port address
+
+	// int PS2_data, RVALID;
+
+	// while (1) 
+	// {
+	// 	PS2_data = *(PS2_ptr);	// read the Data register in the PS/2 port
+	// 	RVALID = (PS2_data & 0x8000);	// extract the RVALID field
+	// 	if (RVALID != 0)
+	// 	{
+	// 		/* always save the last three bytes received */
+	// 		byte1 = byte2;
+	// 		byte2 = byte3;
+	// 		byte3 = (int) (PS2_data & 0xFF);	
+	// 	}
+		
+		
+	// 	if(byte3 == UP)
+	// 		*RLEDs = 1;
+	// 	else if (byte3 == DOWN)
+	// 		*RLEDs = 0b10;
+	// 	else if (byte3 == RIGHT)
+	// 		*RLEDs = 0b100;
+	// 	else if (byte3 == LEFT)
+	// 		*RLEDs = 0b1000;
+	// 	else 
+	// 		*RLEDs = 0b1111111111;
+	// }
+
     while(game_state){
 		generate_random_block();
 		update_board();
