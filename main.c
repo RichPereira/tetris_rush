@@ -29,6 +29,25 @@
 	
 #define BLOCK_SIZE 10
 
+//KEYBOARD STUFF
+// #define UP 0x75
+// #define DOWN 0x72 //drop key
+// #define LEFT 0x6B //move left
+// #define RIGHT 0x74 //move right
+
+// #define ZKEY 0x1A //rotate left
+// #define XKEY 0x22 //rotate right 
+// #define CKEY 0x21 //hold piece 
+
+// //Alternative up/down/left/right
+// #define WKEY 0x1D
+// #define SKEY 0x1B
+// #define AKEY 0x1C
+// #define DKEY 0x23
+
+// #define ENTER 0x5A //drop
+// #define SPACE 0x29 //drop
+
 int pixel_buffer_start; // global variable
 short int Buffer1[240][512]; // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
@@ -129,8 +148,7 @@ int main(void){
 
 	// int PS2_data, RVALID;
 
-	// while (1) 
-	// {
+	// while (1) {
 	// 	PS2_data = *(PS2_ptr);	// read the Data register in the PS/2 port
 	// 	RVALID = (PS2_data & 0x8000);	// extract the RVALID field
 	// 	if (RVALID != 0)
@@ -142,16 +160,35 @@ int main(void){
 	// 	}
 		
 		
-	// 	if(byte3 == UP)
-	// 		*RLEDs = 1;
-	// 	else if (byte3 == DOWN)
-	// 		*RLEDs = 0b10;
-	// 	else if (byte3 == RIGHT)
-	// 		*RLEDs = 0b100;
-	// 	else if (byte3 == LEFT)
-	// 		*RLEDs = 0b1000;
+	// 	if((byte3 == ENTER) || (byte3 == DOWN) || byte3 == SPACE) //drop the piece
+    //     {
+	// 		//code 
+    //     }
+
+	// 	else if (byte3 == ZKEY) //Rotate piece counter-clockwise
+    //     {
+	// 		//code
+    //     }
+
+	// 	else if (byte3 == XKEY) //Rotate piece clockwise
+	// 	{
+	// 		//code 
+	// 	}
+
+	// 	else if (byte3 == RIGHT) //Shift piece right
+    //     {
+	// 		//code
+    //     }
+
+	// 	else if (byte3 == LEFT) //Shift piece left
+    //     {
+	// 		//code
+    //     }
+
 	// 	else 
-	// 		*RLEDs = 0b1111111111;
+    //     {
+	// 		//code - nothing happens or invalid key error message?
+    //     }
 	// }
 
     while(game_state){
