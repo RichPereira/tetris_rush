@@ -1623,30 +1623,6 @@ const uint16_t InstructionsUpdated[240][320] = {
 
 };
 
-const int Tetris_block_move_sound[]  = { 0x0d, 0x20, 0xa0, 0x00, 0x01, 0x23, 0x66, 0x23, 0x37, 0xb9, 0xaa, 0x80, 0x00, 0x00, 0x00, 0x34, 
-  0x83, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0e, 0x46, 0xe4, 0x4d, 0x0d, 0xc0, 0x79, 0x32, 0x9c, 0x6f, 
-  0x89, 0xb9, 0x7b, 0x24, 0x00, 0x05, 0x80, 0xe6, 0x79, 0xa9, 0x15, 0x0b, 0xb2, 0x0e, 0x65, 0x97, 
-  0x40, 0x16, 0xc1, 0xbe, 0x97, 0x3f, 0x09, 0xc1, 0x90, 0xe1, 0x0c, 0xeb, 0x3a, 0x14, 0x11, 0x58, 
-  0xd4, 0x70, 0x93, 0x88, 0x64, 0xcc, 0x0c, 0x91, 0x3d, 0xdf, 0xbf, 0x7e, 0x9f, 0x50, 0x32, 0x4a, 
-  0xaf, 0x57, 0xb3, 0xee, 0x03, 0x02, 0x8e, 0x74, 0xe1, 0xa0, 0x74, 0x4c, 0xc6, 0xa3, 0x73, 0xcf, 
-  0xa6, 0xa1, 0xa7, 0xcd, 0x33, 0xae, 0x76, 0x36, 0x78, 0xf7, 0xff, 0xff, 0x88, 0x0a, 0xc5, 0x63, 
-  0x26, 0x9f, 0xc7, 0x80, 0x87, 0xb9, 0xb6, 0x2b, 0x26, 0x53, 0x96, 0xf4, 0x2d, 0x80, 0x9d, 0x97, 
-  0x36, 0x7c, 0x30, 0x2b, 0x19, 0x22, 0x5d, 0xe3, 0xcd, 0x66, 0xfb, 0xff, 0xff, 0xff, 0xfe, 0xef, 
-  0xde, 0x44, 0xd6, 0x77, 0x88, 0x0f, 0x29, 0xf3, 0x7b, 0xfa, 0x3c, 0x89, 0xac, 0x52, 0x03, 0xc8, 
-  0x9a, 0x13, 0x83, 0x80, 0x87, 0x88, 0x03, 0x1e, 0x20, 0x77, 0xff, 0xca, 0x3a, 0x08, 0x0d, 0x04, 
-  0x06, 0x83, 0xe1, 0xf1, 0x18, 0x7e, 0x01, 0xc0, 0xe0, 0x70, 0x38, 0x1d, 0x8e, 0x07, 0x03, 0x01, 
-  0x00, 0x40, 0x00, 0x30, 0xcb, 0xab, 0x41, 0x95, 0xac, 0x39, 0x82, 0x0c, 0x99, 0x4a, 0xd8, 0x76, 
-  0x8d, 0x1a, 0x3b, 0x66, 0x4f, 0x6c, 0x9c, 0xc6, 0x0a, 0x5c, 0xa0, 0x20, 0x62, 0xa2, 0x8d, 0x52, 
-  0x40, 0x32, 0xd1, 0x28, 0x06, 0x03, 0x20, 0x62, 0x71, 0xf8, 0x38, 0x04, 0x06, 0xae, 0x78, 0x00, 
-  0xa1, 0x90, 0x4f, 0xe0, 0x60, 0xb0, 0x78, 0x12, 0x05, 0x95, 0x03, 0x1a, 0x0f, 0xa1, 0x72, 0x01, 
-  0x87, 0x8c, 0x40, 0x04, 0x50, 0x27, 0x17, 0x40, 0x91, 0x37, 0xc9, 0xb2, 0x08, 0xcb, 0x0e, 0x20, 
-  0x00, 0x80, 0x84, 0x88, 0x63, 0xa0, 0x61, 0x30, 0xc9, 0x34, 0x35, 0x4b, 0x83, 0xe0, 0x0c, 0x04, 
-  0x00, 0x08, 0x00, 0x20, 0x30, 0x57, 0x0f, 0x9c, 0x41, 0x10, 0x0a, 0x23, 0x01, 0x20, 0x79, 0x32, 
-  0x16, 0x26, 0x16, 0xf6, 0x5f, 0x71, 0x70, 0x22, 0x3a, 0xc6, 0x1b, 0xc3, 0x61, 0x24, 0x01, 0xbc, 
-  0x81, 0x77, 0xbb, 0xce, 0x8f, 0xc2, 0x00, 0x17, 0xcb, 0x62, 0xc8, 0xac, 0x9b, 0x10, 0x4d, 0x12, 
-  0x81, 0x1d, 0x4c, 0x84, 0x01, 0x60, 0x20
-};
-
 short int board[ROWS][COLS];
 bool left = false;
 bool right = false;
@@ -1697,6 +1673,7 @@ void show_start_page();
 void show_instructions();
 int main_game();
 void audio_playback(const int *samples, int n);
+void copy_array(TetrisBlock *block, TetrisBlock *prev_block);
 
 int main(void){
     srand(time(NULL));
@@ -1767,13 +1744,15 @@ void user_handler(TetrisBlock *block, TetrisBlock *prev_block){
         byte3 = (int) (PS2_data & 0xFF);	
     }
     // If the input is 'enter', 'down', 'space' or 's' keys, then move the block down if possible
-    if ((byte3 == ENTER) || (byte3 == DOWN) || byte3 == SPACE || byte3 == SKEY){
-        if (move_block_down(block, prev_block)) {
-            make_move(block);
-            clear_FIFO(0);
-        } else {
-            moving = false;
-        }
+    if ((byte3 == DOWN) || byte3 == SPACE || byte3 == SKEY){
+        clear_FIFO(0);
+		if (move_block_down(block, prev_block)){
+			make_move(block);
+		} else {
+			moving = false;
+		}
+        
+
     // else if input is 'z' key then rotate it counter-clockwise 
     } else if (byte3 == ZKEY){ //Rotate piece counter-clockwise
         rotate_ccw = true;
@@ -1821,13 +1800,16 @@ void user_handler(TetrisBlock *block, TetrisBlock *prev_block){
 		rotate_ccw = false;
         moving = true;
         // keep moving the block down each time regardless
-        if (move_block_down(block, prev_block)){
-            make_move(block);
-        } else {
-            moving = false;
-        }
+        
     }
-    // clear the fifo when there are more than 1 elements in the fifo memory
+
+	if (move_block_down(block, prev_block)){
+		make_move(block);
+	} else {
+		moving = false;
+	}
+
+    // clear the fifo when there are more than 3 elements in the fifo memory
     if(read_available(*(PS2_ptr)) > 1) // Make sure fifo doesn't over flow
         clear_FIFO(1);
     
@@ -1884,32 +1866,74 @@ void draw_box(int x, int y, short int colour){  //four pixels in total
 // Display the next block to drop on the board for the player to see
 void display_next_block(){
 	int block_size = 15;
-	for (int row = 0; row < SHAPE_ARRAY_SIZE - 1; row++ ){
-        for (int col = 0; col < SHAPE_ARRAY_SIZE - 1; col++){
-            
-            int board_col = 244 + (col * block_size);
-            int board_row = 84 + (row * block_size);
-            short int color = random_block_next.shape[row][col];
+    int board_col = 0;
+    int board_row = 0;
+    short int color = BLANK;
 
-			if (color == BLANK){
-				color = BLANK;
-			}
-            for (int k = 0; k < block_size-1; k++) {
-                for (int l = 0; l < block_size-1; l++) {
-                    draw_box(board_col + k, board_row + l, color);
+    int col_start = 0;
+    int row_start = 0;
+
+ if(random_block_next.color == (short) CYAN)
+    {
+        block_size = 12;
+        col_start = 244;
+        row_start = 87;
+
+        for (int row = 0; row < SHAPE_ARRAY_SIZE-1; row++ )
+        {
+            for (int col = 0; col < SHAPE_ARRAY_SIZE; col++)
+            {
+                board_col = col_start + (col * block_size);
+                board_row = row_start + (row * block_size);
+                color = random_block_next.shape[row][col];
+                for (int k = 0; k < block_size-1; k++) {
+                    for (int l = 0; l < block_size-1; l++) {
+                        draw_box(board_col + k, board_row + l, color);
+                    }
+                }
+            }
+        }   
+
+    } else 
+    {
+        block_size = 15;
+        if(random_block_next.color == (short) YELLOW)
+        {
+            col_start = 254;
+            row_start = 89;            
+        } else
+        {
+            col_start = 248;
+            row_start = 87; 
+        }
+
+        for (int row = 0; row < SHAPE_ARRAY_SIZE - 1; row++ )
+        {
+            for (int col = 0; col < SHAPE_ARRAY_SIZE - 1; col++)
+            {
+                int board_col = col_start + (col * block_size);
+                int board_row = row_start + (row * block_size);
+                short int color = random_block_next.shape[row][col];
+                for (int k = 0; k < block_size-1; k++) {
+                    for (int l = 0; l < block_size-1; l++) {
+                        draw_box(board_col + k, board_row + l, color);
+                    }
                 }
             }
         }
-    }
+    }	
 }
 
 // draw the 20 row by 10 col board on the VGA screen
 void draw_tetris_board() {
+    int start_col = 84;
+    int start_row = 40;
+
     for (int row = 0; row < ROWS; row++ ){
         for (int col = 0; col < COLS; col++){
             
-            int board_col = 84 + (col * BLOCK_SIZE);
-            int board_row = 40 + (row * BLOCK_SIZE);
+            int board_col = start_col + (col * BLOCK_SIZE);
+            int board_row = start_row + (row * BLOCK_SIZE);
             short int color = board[row][col];
             if(color == -1){
                 color = BLANK;
@@ -1958,7 +1982,8 @@ bool is_valid_move(int newRow, int newCol, TetrisBlock *block, TetrisBlock *prev
     for (int i = 0; i < SHAPE_ARRAY_SIZE; i++) {
         for (int j = 0; j < SHAPE_ARRAY_SIZE; j++) {
             if (block->shape[i][j] != BLANK) {
-                if(board[newRow + i][newCol + j] != -1 || (newRow+i < 0) || (newRow+i >= ROWS) || (newCol + j < 0) || (newCol + j >= COLS)){
+                if(board[newRow + i][newCol + j] != -1 || (newRow+i < 0) || (newRow+i >= ROWS) || (newCol + j <= -1) || (newCol + j >= COLS)){
+                
                     return false; // Move is invalid if collision detected
                 }
             }
@@ -1971,7 +1996,7 @@ bool is_valid_move(int newRow, int newCol, TetrisBlock *block, TetrisBlock *prev
 // Special function similar to the is_valid_move()
 bool can_move_down(int newRow, int newCol, TetrisBlock *block, TetrisBlock *prev_block) {
     // Check if the new position collides with other blocks
-    
+    clear_FIFO(0);
     for (int i = 0; i < SHAPE_ARRAY_SIZE; i++) {
         for (int j = 0; j < SHAPE_ARRAY_SIZE; j++) {
             if (block->shape[i][j] != BLANK) {
@@ -1987,64 +2012,66 @@ bool can_move_down(int newRow, int newCol, TetrisBlock *block, TetrisBlock *prev
 // Function to move the block down on the game board
 bool move_block_down(TetrisBlock *block, TetrisBlock *prev_block) {
     prev_block = block;
-
-    if (can_move_down(block->start.row + block->offset.row + 1, block->start.col + block->offset.col, block, prev_block)) {
+    clear_FIFO(0);
+    if (can_move_down(block->start.row + block->offset.row + 1, block->start.col + block->offset.col, block, prev_block)){
         // Update the offset to move the block down
         block->offset.row++;
         return true;
     }
 	moving = false;
+    block = prev_block;
     return false;
 }
 // Function moves the block right
 bool move_block_right(TetrisBlock *block, TetrisBlock *prev_block) {
     prev_block = block;
-
+    clear_FIFO(0);
     if (right && (is_valid_move(block->start.row + block->offset.row, block->start.col + block->offset.col + 1, block, prev_block))){
         block->offset.col++;
 		right = false;
         return true;
     } 
 	right = false;
+    block = prev_block;
     return false;
 }
 
 // Function moves the block left
 bool move_block_left(TetrisBlock *block, TetrisBlock *prev_block) {
     prev_block = block;
-
+    clear_FIFO(0);
     if (left && is_valid_move(block->start.row + block->offset.row, block->start.col + block->offset.col - 1, block, prev_block)){
         block->offset.col--;
 		left = false;
         return true;
     } 
 	left = false;
+    block = prev_block;
     return false;
 }
 
-// Function rotates the block counter clockwise by getting the appropriate rotation configuration of that block
-bool rotate_counter_clockwise(TetrisBlock *block, TetrisBlock *prev_block){
-    prev_block = block;
-
-    if(block->rotation_state == 0){
-        block->rotation_state = SHAPE_ARRAY_SIZE - 1;
-    } else {
-        block->rotation_state -= 1;
-    }
+void copy_array(TetrisBlock *block, TetrisBlock *prev_block){
     for (int i = 0; i < SHAPE_ARRAY_SIZE; i++) {
         for (int j = 0; j < SHAPE_ARRAY_SIZE; j++) {
             block->shape[i][j] = block->rotation[block->rotation_state][i][j];
         }
     }
+}
+
+// Function rotates the block counter clockwise by getting the appropriate rotation configuration of that block
+bool rotate_counter_clockwise(TetrisBlock *block, TetrisBlock *prev_block){
+    prev_block = block;
+    if(block->rotation_state == 0){
+        block->rotation_state = SHAPE_ARRAY_SIZE - 1;
+    } else {
+        block->rotation_state -= 1;
+    }
+    copy_array(block, prev_block);
 
     if (is_valid_move(block->start.row + block->offset.row, block->start.col + block->offset.col, block, prev_block)){
         return true;
     } else {
-        for (int i = 0; i < SHAPE_ARRAY_SIZE; i++) {
-            for (int j = 0; j < SHAPE_ARRAY_SIZE; j++) {
-                block->shape[i][j] = prev_block->rotation[prev_block->rotation_state][i][j];
-            }
-        }
+        copy_array(block, prev_block);
         return false;
     }
 
@@ -2054,24 +2081,15 @@ bool rotate_counter_clockwise(TetrisBlock *block, TetrisBlock *prev_block){
 bool rotate_clockwise(TetrisBlock *block, TetrisBlock *prev_block){
     rotate_cw = false;
     prev_block = block;
-
     // temperarily rotate the block by
     // selectecting the config of the rotated block 
     block->rotation_state = (block->rotation_state + 1) % 4;
     
-    for (int i = 0; i < SHAPE_ARRAY_SIZE; i++) {
-        for (int j = 0; j < SHAPE_ARRAY_SIZE; j++) {
-            block->shape[i][j] = block->rotation[block->rotation_state][i][j];
-        }
-    }
+    copy_array(block, prev_block);
     if (is_valid_move(block->start.row + block->offset.row, block->start.col + block->offset.col, block, prev_block)){
         return true;
     } else {
-        for (int i = 0; i < SHAPE_ARRAY_SIZE; i++) {
-            for (int j = 0; j < SHAPE_ARRAY_SIZE; j++) {
-                block->shape[i][j] = prev_block->rotation[prev_block->rotation_state][i][j];
-            }
-        }
+        copy_array(block, prev_block);
         return false;
     }
 }
@@ -2119,6 +2137,7 @@ bool check_hor() //TODO: Get fully working - block keeps going down until a coll
     if(cleared){
         scoreGlob += numClearedRow; //Reward user more if they clear more rows in one move //culsTODO: differewnt score calculation?
     }
+    printf("Score - %d\n", scoreGlob);
     return cleared;
 }
 
@@ -2156,7 +2175,6 @@ void draw_number(int x, int y, int num)
 // Function draws the score on the board
 void draw_score(){
     int scoreLoc = scoreGlob;
-    printf("This is the updated global score: %d\n", scoreGlob);
         if(scoreLoc != 0)
         {
             int temp = 0;
@@ -2255,7 +2273,6 @@ void draw_end_number(int x, int y, int num)
 
 void  draw_GO_score(){
     int scoreLoc = scoreGlob;
-    printf("This is the end global score: %d\n", scoreGlob);
         int temp = 0;
         for(int i=0; i<4; i++){
             temp = scoreLoc%10;
