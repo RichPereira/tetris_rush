@@ -1,8 +1,3 @@
-/*
-#include "address_map_nios2.h"
-*/
-
-/* include library */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -24,29 +19,14 @@
 #define ORANGE  0xFD20  // Orange
 #define WHITE   0xFFFF // white
 
-#define board_dim_x 130
-#define board_dim_y 180
+#define WIDTH 10
+#define HEIGHT 20
+
+#define board_x_pixels 90
+#define board_y_pixels 180
 	
-#define BLOCK_SIZE 10
-
-//KEYBOARD STUFF
-// #define UP 0x75
-// #define DOWN 0x72 //drop key
-// #define LEFT 0x6B //move left
-// #define RIGHT 0x74 //move right
-
-// #define ZKEY 0x1A //rotate left
-// #define XKEY 0x22 //rotate right 
-// #define CKEY 0x21 //hold piece 
-
-// //Alternative up/down/left/right
-// #define WKEY 0x1D
-// #define SKEY 0x1B
-// #define AKEY 0x1C
-// #define DKEY 0x23
-
-// #define ENTER 0x5A //drop
-// #define SPACE 0x29 //drop
+#define BLOCK_SIZE 9
+#define SHAPE_ARRAY_SIZE 4
 
 int pixel_buffer_start; // global variable
 short int Buffer1[240][512]; // 240 rows, 512 (320 + padding) columns
@@ -54,71 +34,90 @@ short int Buffer2[240][512];
 
 typedef struct {
     short int shape[4][4];
+    int x;
+    int y;
+    int color;
 } TetrisBlock;
 
 TetrisBlock blocks[7] = {
     // I-Block
     {
-        {{WHITE, WHITE, WHITE, WHITE},
+        {{BLANK, BLANK, BLANK, BLANK},
          {CYAN, CYAN, CYAN, CYAN},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     },
     // J-Block
     {
-        {{BLUE, WHITE, WHITE, WHITE},
-         {BLUE, BLUE, BLUE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+        {{BLUE, BLANK, BLANK, BLANK},
+         {BLUE, BLUE, BLUE, BLANK},
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     },
     // L-Block
     {
-        {{WHITE, WHITE, ORANGE, WHITE},
-         {ORANGE, ORANGE, ORANGE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+        {{BLANK, BLANK, ORANGE, BLANK},
+         {ORANGE, ORANGE, ORANGE, BLANK},
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     },
     // O-Block
     {
-        {{YELLOW, YELLOW, WHITE, WHITE},
-         {YELLOW, YELLOW, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+        {{YELLOW, YELLOW, BLANK, BLANK},
+         {YELLOW, YELLOW, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     },
     // S-Block
     {
-        {{WHITE, GREEN, GREEN, WHITE},
-         {GREEN, GREEN, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+        {{BLANK, GREEN, GREEN, BLANK},
+         {GREEN, GREEN, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     },
     // T-Block
     {
-        {{WHITE, MAGENTA, WHITE, WHITE},
-         {MAGENTA, MAGENTA, MAGENTA, WHITE},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+        {{BLANK, MAGENTA, BLANK, BLANK},
+         {MAGENTA, MAGENTA, MAGENTA, BLANK},
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     },
     // Z-Block
     {
-        {{RED, RED, WHITE, WHITE},
-         {WHITE, RED, RED, WHITE},
-         {WHITE, WHITE, WHITE, WHITE},
-         {WHITE, WHITE, WHITE, WHITE}}
+        {{RED, RED, BLANK, BLANK},
+         {BLANK, RED, RED, BLANK},
+         {BLANK, BLANK, BLANK, BLANK},
+         {BLANK, BLANK, BLANK, BLANK}}
     }
 };
 
-short int board[board_dim_x][board_dim_y];
-short int random_block[4][4];
-void initialize_data();
-void draw_tetris_board();
+short int board[WIDTH][HEIGHT];
+TetrisBlock random_block;
+TetrisBlock previous_block;
+bool game_state = true;
+
 void plot_pixel(int x, int y, short int line_colour);
 void wait_for_vsync();
 void clear_screen_init();
 void draw_box(int x, int y, short int colour);
 void swap(int *a, int *b);
-void update_board();
+
+
+void initialize_data();
+void draw_tetris_board();
+bool update_board();
 void generate_random_block();
+void clear_prev_block();
+void clear_prev_block();
+void merge_block();
+void update_block_location();
+bool is_in_bounds();
+bool does_overlap();
+bool new_block = true;
+bool down = false;
+bool left = false;
+bool right = false;
+
 
 int main(void){
     // Set for randomness each time
@@ -138,64 +137,16 @@ int main(void){
     pixel_buffer_start = *(pixel_ctrl_ptr + 1); // we draw on the back buffer
     clear_screen_init(); // pixel_buffer_start points to the pixel buffer
     initialize_data();
-    bool game_state = true;
-
-    // int byte1 = 0;
-	// int byte2 = 0;
-	// int byte3 = 0;
+    
 	
-  	// volatile int * PS2_ptr = (int *) 0xFF200100;  // PS/2 port address
-
-	// int PS2_data, RVALID;
-
-	// while (1) {
-	// 	PS2_data = *(PS2_ptr);	// read the Data register in the PS/2 port
-	// 	RVALID = (PS2_data & 0x8000);	// extract the RVALID field
-	// 	if (RVALID != 0)
-	// 	{
-	// 		/* always save the last three bytes received */
-	// 		byte1 = byte2;
-	// 		byte2 = byte3;
-	// 		byte3 = (int) (PS2_data & 0xFF);	
-	// 	}
-		
-		
-	// 	if((byte3 == ENTER) || (byte3 == DOWN) || byte3 == SPACE) //drop the piece
-    //     {
-	// 		//code 
-    //     }
-
-	// 	else if (byte3 == ZKEY) //Rotate piece counter-clockwise
-    //     {
-	// 		//code
-    //     }
-
-	// 	else if (byte3 == XKEY) //Rotate piece clockwise
-	// 	{
-	// 		//code 
-	// 	}
-
-	// 	else if (byte3 == RIGHT) //Shift piece right
-    //     {
-	// 		//code
-    //     }
-
-	// 	else if (byte3 == LEFT) //Shift piece left
-    //     {
-	// 		//code
-    //     }
-
-	// 	else 
-    //     {
-	// 		//code - nothing happens or invalid key error message?
-    //     }
-	// }
-
     while(game_state){
-		generate_random_block();
-		update_board();
-		clear_screen_init();
-        draw_tetris_board();
+		if(new_block){
+			generate_random_block();
+		}
+        clear_prev_block();
+        merge_block();
+		draw_tetris_board();
+		
         // Swaps the front buffer with the back onces the sync is complete and rendering is done
         wait_for_vsync(); // swap front and back buffers on VGA vertical sync
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
@@ -235,8 +186,7 @@ void swap(int *a, int *b){
     *b = temp;
 }
 
-
-// Draws boxes of 1x1 size
+// Draws boxes of 4x4 size
 void draw_box(int x, int y, short int colour){  //four pixels in total
     for (int i = 0; i < 1; i++){
         for (int j = 0; j < 1; j++){
@@ -245,64 +195,139 @@ void draw_box(int x, int y, short int colour){  //four pixels in total
     }
 }
 
-
 // Function draws the initial white board where the block will drop in
 void draw_tetris_board() {
-    for (int i = 0; i < board_dim_x; i++) {
-        for (int j = 0; j < board_dim_y; j++) {
+    for (int i = 0; i < WIDTH; i++) {
+        for (int j = 0; j < HEIGHT; j++) {
             // Adjusting coordinates based on i and j
-            int x = 70 + i;
-            int y = 40 + j;
+            int x = 40 + i * BLOCK_SIZE; // Multiply by 10 for scaling
+            int y = 40 + j * BLOCK_SIZE; // Multiply by 10 for scaling
             short int color = board[i][j];
-            plot_pixel(x, y, color);
+            
+            // Draw a 10x10 square for each board element
+            for (int k = 0; k < BLOCK_SIZE; k++) {
+                for (int l = 0; l < BLOCK_SIZE; l++) {
+                    draw_box(x + k, y + l, color);
+                }
+            }
         }
     }
 }
 
-
 // Function initializes any data that requires to be set before game starts
 void initialize_data(){
-    for (int i = 0; i < board_dim_x; i++) {
-        for (int j = 0; j < board_dim_y; j++) {
+    for (int i = 0; i < WIDTH; i++) {
+        for (int j = 0; j < HEIGHT; j++) {
             board[i][j] = BOARD_COLOR;
+        }
+    }
+    // Initialize the previous block struct
+    for (int i = 0; i < SHAPE_ARRAY_SIZE; i++){
+        for (int j = 0; j < SHAPE_ARRAY_SIZE; j++){
+            previous_block.shape[i][j] = WHITE;
         }
     }
 }
 
 // Generate a random block from the blocks list and place it in the global var for later use.
 void generate_random_block(){
+    int colors[7] = {CYAN, BLUE, ORANGE, YELLOW, GREEN, MAGENTA, RED};
     // Generate random number
     int random_num = rand() % 7;
+	printf("Random number - %d\n", random_num);
     // Copy the selected block from the blocks array
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            random_block[i][j] = blocks[random_num].shape[i][j];
+            random_block.shape[i][j] = blocks[random_num].shape[i][j];
         }
     }
+	// always initialize its coordinates towards the top-center of the board
+    random_block.x = WIDTH / 2 - 1;
+    random_block.y = 0;
+    random_block.color = colors[random_num];
+	
+	previous_block.y = 0;
+	previous_block.x = WIDTH / 2 - 1;
+    previous_block.color = random_block.color;
+	new_block = false;
 }
 
-// Function updates the board by putting the random block at the top of the board
-void update_board() {
-    // Define the starting position for placing the block
-    int start_x = board_dim_x / 2 - (BLOCK_SIZE/2); // Adjusted to center the block
-    int start_y = 0;
+void merge_block(){
+	update_block_location();
+	if (!is_in_bounds()){
+        random_block.x = previous_block.x;
+        random_block.y = previous_block.y;
+        new_block = true;
+	}
+	
+    for (int i = 0; i < SHAPE_ARRAY_SIZE; i++){
+		for (int j = 0; j < SHAPE_ARRAY_SIZE; j++){
+			if ((random_block.shape[i][j] != BLANK)){
+				board[random_block.x + i][random_block.y + j] = random_block.shape[i][j];
+			}
+		}
+	}
+}
 
-    // Loop through each cell of the BLOCK_SIZE x BLOCK_SIZE block
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            // Calculate the corresponding position on the board
-            int x = start_x + i * BLOCK_SIZE;
-            int y = start_y + j * BLOCK_SIZE;
 
-            // Update the board with the color of the block
-            if (x >= 0 && x < board_dim_x && y >= 0 && y < board_dim_y) {
-                // Update the board with the block color
-                for (int block_x = 0; block_x < BLOCK_SIZE; block_x++) {
-                    for (int block_y = 0; block_y < BLOCK_SIZE; block_y++) {
-                        board[x + block_x][y + block_y] = random_block[i][j];
-                    }
-                }
-            }
+void update_block_location(){
+    previous_block.x = random_block.x;
+    previous_block.y = random_block.y;
+
+    //right = true;
+    
+    if(down){
+        random_block.y += 1;
+    }
+    if (right){
+		if (random_block.x > WIDTH - 1){
+            random_block.x = WIDTH - 2;
+        }else{
+            random_block.x += 1;
         }
     }
+    if (left){
+        if(random_block.x < 0){
+            random_block.x = 0;
+        } else {
+            random_block.x -= 1;
+        }
+    }
+	random_block.y += 1;
+}
+
+void clear_prev_block(){
+	int board_x = previous_block.x;
+	int board_y = previous_block.y;
+	for (int i = 0; i < SHAPE_ARRAY_SIZE; i++){
+		for (int j = 0; j < SHAPE_ARRAY_SIZE; j++){
+			board[board_x + i][board_y + j] = previous_block.shape[i][j];
+		}
+	}
+}
+
+bool is_in_bounds(){
+    for (int i = 0; i < SHAPE_ARRAY_SIZE; i++){
+		for (int j = 0; j < SHAPE_ARRAY_SIZE; j++){
+            if ((random_block.shape[i][j] != BLANK)){
+			    if(random_block.x + i >= WIDTH || random_block.y + j >= HEIGHT || random_block.x + i < 0){
+                    return false;
+                }
+            }
+		}
+	}
+    return true;
+}
+
+bool does_overlap(){
+	for (int i = 0; i < SHAPE_ARRAY_SIZE; i++){
+		for (int j = 0; j < SHAPE_ARRAY_SIZE; j++){
+			if ((random_block.shape[i][j] != BLANK)){
+				if (board[random_block.x + i][random_block.y + j] != WHITE){
+                    return true;
+                }
+			}
+		}
+	}
+	return false;
 }
